@@ -7,6 +7,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var sGameStatus;
   var sGamePlayingStatus;
   var spriteBackground;
+  var spritePlayerBall;
 
   var isMouseInCircle = false;
 
@@ -15,7 +16,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var fMouseAngle = 0;
 
   function preload () {
-    game.load.image('bg', 'assets/image/background.png');    
+    game.load.image('bg', 'assets/image/background.png');   
+    game.load.image('player', 'assets/image/ball.png');
   }
 
   function create () {
@@ -24,8 +26,11 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
     spriteBackground = game.add.sprite(game.width/2, game.height/2, 'bg');
     spriteBackground.anchor.setTo(0.5, 0.5);
-
     spriteBackground.visible = false;
+
+    spritePlayerBall = game.add.sprite(game.width/2, game.height/2, 'player');
+    spritePlayerBall.anchor.setTo(0.5, 0.5);
+    spritePlayerBall.visible = false;
 
     sGameStatus = 'GAME_MENU'; 
     initialState();
@@ -55,6 +60,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
     } else if (sGameStatus == 'GAME_PLAYING') {
       spriteBackground.visible = true;
+      spritePlayerBall.visible = true;
     } else if (sGameStatus == 'GAME_OVER') {
 
     } else {
@@ -74,6 +80,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       //console.log("MouseAngle is " + fMouseAngle);
       //console.log("MousePosition is " + game.input.mousePointer.x + " " + game.input.mousePointer.y);
       spriteBackground.angle = fMouseAngle;
+      spritePlayerBall.angle = fMouseAngle;
     }
   }
 
