@@ -8,8 +8,14 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var sGamePlayingStatus;
   var spriteBackground;
 
+  var isMouseInCircle = false;
+
+  var fCircleRadium = 100;
+
+  var fMouseAngle = 0;
+
   function preload () {
-    game.load.image('bg', 'assets/iamge/background.png');    
+    game.load.image('bg', 'assets/image/background.png');    
   }
 
   function create () {
@@ -62,7 +68,13 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   }
 
   function updateGamePlaying(){
-
+    getIsMouseInCircle();
+    if (!isMouseInCircle) {
+      getMouseAngle();
+      //console.log("MouseAngle is " + fMouseAngle);
+      //console.log("MousePosition is " + game.input.mousePointer.x + " " + game.input.mousePointer.y);
+      spriteBackground.angle = fMouseAngle;
+    }
   }
 
   function updateGameOver(){
@@ -71,4 +83,27 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
   function buttonStart(){
 
+  }
+
+  function getIsMouseInCircle(){
+
+    var distance = Math.sqrt(
+        ((game.input.mousePointer.x - game.width/2) * (game.input.mousePointer.x - game.width/2)) +
+         ((game.input.mousePointer.y - game.height/2) * (game.input.mousePointer.y - game.height/2))
+         )
+    console.log("Mouse distance is " + distance);
+    if (distance < fCircleRadium) {
+      isMouseInCircle = true;
+      return true;
+    } else {
+      isMouseInCircle = false;
+      return false;
+    }
+
+  }
+
+  function getMouseAngle(){
+    fMouseAngle = Math.atan2(game.input.mousePointer.y - game.height / 2, game.input.mousePointer.x - game.width / 2) * (180 / Math.PI);
+
+    return fMouseAngle;
   }
