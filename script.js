@@ -65,7 +65,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var spriteNarrativeBitTextsWhitePositionX = game.width / 2;
   var spriteNarrativeBitTextsWhitePositionY = 200;
   var spriteNarrativeBitTextsBlackPositionX = game.width / 2;
-  var spriteNarrativeBitTextsBlackPositionY = 650;
+  var spriteNarrativeBitTextsBlackPositionY = 568;
 
 
   var bitmapDataTrace;
@@ -115,8 +115,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     groupHitBalls.enableBody = true;
 
     //
-    upperScoreBitTexts = game.add.bitmapText(game.world.width/2, 4, 'pixelFont', 'white: 0', 32);
-    lowerScoreBitTexts = game.add.bitmapText(game.world.width/2, game.height - 32 - 4, 'pixelFont', 'black: 0', 32);
+    upperScoreBitTexts = game.add.bitmapText(game.world.width/2, game.height - 32 - 4, 'pixelFont', 'white: 0', 32);
+    lowerScoreBitTexts = game.add.bitmapText(game.world.width/2, 4, 'pixelFont', 'black: 0', 32);
     upperScoreBitTexts.anchor.x = 0.5;
     lowerScoreBitTexts.anchor.x = 0.5;
     upperScoreBitTexts.tint = 0xFFFFFF;
@@ -148,10 +148,10 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   //using for debug
   function render(){
     //game.debug.text(debugResult, 32, 32);
-    bitmapDataTrace.fill(bitmapR, bitmapG ,bitmapB ,0.4);
+    bitmapDataTrace.fill(0, 0, 0,0.4);
 
     bitmapDataTrace.draw(spriteBackground, spriteBackground.x, spriteBackground.y);
-    for (var i =0; i > groupHitBalls.children.length; i++) {
+    for (var i = 0; i > groupHitBalls.children.length; i++) {
       bitmapDataTrace.draw(groupHitBalls.children[i], groupHitBalls.children[i].x, groupHitBalls.children[i].y);
     }
     bitmapDataTrace.draw(spritePlayerBallb, spritePlayerBallb.x, spritePlayerBallb.y);
@@ -180,7 +180,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       spritePlayerBallw.tint = 0xFFFFFF;
       //timerEventMakeBall.lastTime = 0;
 
-      game.time.events.repeat(Phaser.Timer.SECOND * 4, 100, timerEventMakeBall, this);
+      game.time.events.repeat(Phaser.Timer.SECOND * 1, 100, timerEventMakeBall, this);
     } else if (sGameStatus == 'GAME_OVER') {
 
     } else {
@@ -235,8 +235,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   function timerEventMakeBall(){
     if (sGameStatus != 'GAME_PLAYING') return;
     console.log("making timer balls now");
-    var angle = (Math.random() * 2 - 1) * Math.PI;
     var kind = generateRandomBall();
+    var angle = (Math.random() * 2 - 1) * Math.PI;
     makeHitBall(angle, kind);
   }
 
@@ -270,8 +270,14 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   // emerge positions
   // hitball color
   // set speed 
+  // when white balls come from bottom, nothing can be seen
   function makeHitBall(angle, kind){
-    var hitBall = groupHitBalls.create(game.width /2 * (-1) * Math.cos(angle) + game.width / 2, game.width/2 * (-1) * Math.sin(angle) + game.height / 2, ballSprite[kind]);
+    var posx = game.width /2 * (-1) * Math.cos(angle) + game.width / 2;
+    var posy = game.height /2 * (-1) * Math.sin(angle) + game.height / 2;
+
+    if (posy > game.height / 2) kind = WHITE_HITBALL;
+    else kind = BLACK_HITBALL;
+    var hitBall = groupHitBalls.create(posx, posy, ballSprite[kind]);
     hitBall.anchor.setTo(0.5, 0.5);
 
     hitBall.kind = kind;
@@ -427,6 +433,13 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //5
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'They treat me like this.', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    //
+
+    //6 ==  narrativeChangeThreshold + 1;
     spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'I fall in love.', 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
