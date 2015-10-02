@@ -8,6 +8,13 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var fCircleRadium = 100;
   var fHitBallRadium = 25;
 
+  var WHITE_HITBALL = 0;
+  var BLACK_HITBALL = 1;
+
+  var HIT_WHITE_HALF = 0;
+  var HIT_BLACK_HALF = 1;
+  var HIT_NOTHING = 2;
+
   //string and status section
   var sGameStatus;
   var sGamePlayingStatus;
@@ -15,12 +22,12 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
   //sprite section
   var spriteBackground;
-  var spritePlayerBall;
+  var spritePlayerBallw, spritePlayerBallb;
   var groupHitBalls;
 
   //collision group
-  var groupHitBallsCollision;
-  var groupPlayerCollision;
+  //var groupHitBallsCollision;
+  //var groupPlayerCollision;
 
   //bool section
   var isMouseInCircle = false;
@@ -32,49 +39,48 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var debugResult = 'click a body'; 
 
 
+  var bitmapDataTrace;
+
   function preload () {
-    game.load.image('bg', 'assets/image/background.png');   
-    game.load.image('player', 'assets/image/ball.png');
+    game.load.image('bg', 'assets/image/background2.png');   
+    game.load.image('playerw', 'assets/image/whitehalf.png');
+    game.load.image('playerb', 'assets/image/blackhalf2.png');
     game.load.image('hitBallw','assets/image/white_ball.png');
     game.load.image('hitBallb','assets/image/black_ball.png');
+
+    bitmapDataTrace = game.add.bitmapData(game.width, game.height);
+    bitmapDataTrace.addToWorld();
+    bitmapDataTrace.smoothed = false;
   }
 
   function create () {
     // game.physics.startSystem(Phaser.Physics.ARCADE); 
-    game.physics.startSystem(Phaser.Physics.P2JS);
+    //game.physics.startSystem(Phaser.Physics.P2JS);
     game.world.setBounds(0, 0, 800, 800);
-    game.physics.p2.setImpactEvents(true);
+    //game.physics.p2.setImpactEvents(true);
 
     //collision group
-    groupHitBallsCollision = game.physics.p2.createCollisionGroup();
-    groupPlayerCollision = game.physics.p2.createCollisionGroup();
+    //groupHitBallsCollision = game.physics.p2.createCollisionGroup();
+    //groupPlayerCollision = game.physics.p2.createCollisionGroup();
 
     //create sprites.
     spriteBackground = game.add.sprite(game.width/2, game.height/2, 'bg');
     spriteBackground.anchor.setTo(0.5, 0.5);
     spriteBackground.visible = false;
 
-    spritePlayerBall = game.add.sprite(game.width/2, game.height/2, 'player');
-    spritePlayerBall.anchor.setTo(0.5, 0.5);
-    spritePlayerBall.visible = false;
+    spritePlayerBallw = game.add.sprite(game.width/2, game.height/2, 'playerw');
+    spritePlayerBallw.anchor.setTo(0.5, 1);
+    spritePlayerBallw.visible = false;
+
+    spritePlayerBallb = game.add.sprite(game.width/2, game.height/2, 'playerb');
+    spritePlayerBallb.anchor.setTo(0.5, 0);
+    spritePlayerBallb.visible = false;
 
     //set groups
     groupHitBalls = game.add.group();
     groupHitBalls.enableBody = true;
-    groupHitBalls.physicsBodyType = Phaser.Physics.P2JS;
 
 
-    //set player body and collides
-    game.physics.p2.enable(spritePlayerBall);
-    spritePlayerBall.body.setCircle(100);
-    spritePlayerBall.body.fixedRotation = true;
-    spritePlayerBall.body.setCollisionGroup(groupPlayerCollision);
-    spritePlayerBall.body.collides(groupHitBallsCollision, actionGetCollided, this);
-
-    //debug
-    game.input.onDown.add(debugClick, this);
-
-    //initialization
     sGameStatus = 'GAME_MENU'; 
     initialState();
   }
@@ -94,8 +100,19 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     }
   }
 
+  //using for debug
   function render(){
-    game.debug.text(debugResult, 32, 32);
+    //game.debug.text(debugResult, 32, 32);
+    bitmapDataTrace.fill(0,0,0,0.1);
+    //bitmapDataTrace.draw(spriteBackground, spriteBackground.x, spriteBackground.y);
+    for (var i =0; i > groupHitBalls.children.length; i++) {
+      bitmapDataTrace.draw(groupHitBalls.children[i], groupHitBalls.children[i].x, groupHitBalls.children[i].y);
+    }
+    bitmapDataTrace.draw(spritePlayerBallb, spritePlayerBallb.x, spritePlayerBallb.y);
+    bitmapDataTrace.draw(spritePlayerBallw, spritePlayerBallw.x, spritePlayerBallw.y);
+    //if (groupHitBalls.children.length > 0) game.debug.body(groupHitBalls.children[0]);
+    //game.debug.body(spritePlayerBallb);
+    //game.debug.body(spritePlayerBallw);
   }
 
   function initialState(){
@@ -103,7 +120,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
     } else if (sGameStatus == 'GAME_PLAYING') {
       spriteBackground.visible = true;
-      spritePlayerBall.visible = true;
+      spritePlayerBallb.visible = true;
+      spritePlayerBallw.visible = true;
       //timerEventMakeBall.lastTime = 0;
 
       game.time.events.repeat(Phaser.Timer.SECOND * 4, 10, timerEventMakeBall, this);
@@ -114,11 +132,13 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     }
   }
 
+  //update function for status "GAME_MENU"
   function updateGameMenu(){
     sGameStatus = 'GAME_PLAYING';
     initialState();
   }
 
+  //update function for status "GAME_PLAYING"
   function updateGamePlaying(){
     getIsMouseInCircle();
     if (!isMouseInCircle) {
@@ -126,7 +146,17 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       //console.log("MouseAngle is " + fMouseAngle);
       //console.log("MousePosition is " + game.input.mousePointer.x + " " + game.input.mousePointer.y);
       spriteBackground.angle = fMouseAngle;
-      spritePlayerBall.angle = fMouseAngle;
+      spritePlayerBallb.angle = fMouseAngle;
+      spritePlayerBallw.angle = fMouseAngle;
+    }
+
+    for (var i = 0; i < groupHitBalls.children.length; i++) {
+      var spriteHitBall = groupHitBalls.children[i];
+      var status = updateHitBall(spriteHitBall);
+      if (status != HIT_NOTHING) {
+        console.log("spriteHitBall [ " + i + " touched the " + status +" half");
+        groupHitBalls.remove(spriteHitBall, true);
+      }
     }
     //timerEventMakeBall();
   }
@@ -139,7 +169,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
   }
 
-  // todo:
+  // TODO:
   // rythm things
   function timerEventMakeBall(){
     if (sGameStatus != 'GAME_PLAYING') return;
@@ -147,6 +177,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     makeHitBall(0, 0);
   }
 
+
+  // get whether mouse is in the player's circle
   function getIsMouseInCircle(){
 
     var distance = Math.sqrt(
@@ -164,53 +196,58 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
   }
 
+  //get Mouse Angle, in order to change the direction of player's ball;
   function getMouseAngle(){
     fMouseAngle = Math.atan2(game.input.mousePointer.y - game.height / 2, game.input.mousePointer.x - game.width / 2) * (180 / Math.PI);
 
     return fMouseAngle;
   }
 
-  // todo: 
+  // TODO: 
   // emerge positions
   // hitball color
   // set speed 
   function makeHitBall(posx, posy){
     var hitBall = groupHitBalls.create(posx, posy, 'hitBallb');
     hitBall.anchor.setTo(0.5, 0.5);
-    hitBall.body.setCircle(fHitBallRadium);
-    hitBall.body.setCollisionGroup(groupHitBallsCollision);
-    hitBall.body.collides(groupPlayerCollision);
-    
-    // todo:
-    // curious thing is hitBall.body.speed generally lower and lower
+
+    hitBall.kind = BLACK_HITBALL;
+
     hitBall.body.velocity.x = 40;
     hitBall.body.velocity.y = 40;
   }
 
-  // todo:
-  // rightnow just print that it is collided.
-  function actionGetCollided(body1, body2){
-    //body1 is player, body2 is hitball
-    console.log("get hit");
 
-    //body2.sprite is indeed in the groupHitBalls
-    groupHitBalls.remove(body2.sprite, true);
-    //console.log("and after the remove the new length is " + groupHitBalls.length);
+  // TODO:
+  // update HitBall status, returns:
+  // 0: Hit the white part of player's ball;
+  // 1: Hit the black part of player's ball;
+  // 2: Hit nothing.
+  function updateHitBall(spriteHitBall){
+    var distance = Math.sqrt(
+      ((spriteHitBall.position.x - game.width/2) * (spriteHitBall.position.x - game.width/2)) +
+      ((spriteHitBall.position.y - game.height/2) * (spriteHitBall.position.y - game.height/2))
+      );
 
-  }
+    if (distance > fCircleRadium + fHitBallRadium) return HIT_NOTHING;
 
+    var hitBlackHalf = checkOverlap(spriteHitBall, spritePlayerBallb);
+    var hitWhiteHalf = checkOverlap(spriteHitBall, spritePlayerBallw);
 
-  // debug functions section
-  function debugClick(pointer){
-    var bodies = game.physics.p2.hitTest(pointer.position, [spritePlayerBall]);
-    if (bodies.length == 0) {
-      debugResult = "You didn't click a body.";
-    } else {
-      debugResult = "You clicked: ";
-      for (var i = 0; i < bodies.length; i++) {
-        debugResult += bodies[i].parent.sprite.key;
-        if (i < bodies.length - 1) debugResult += ',';
-      } 
+    if ((hitBlackHalf) && (hitWhiteHalf)) {
+      if (spriteHitBall.kind == BLACK_HITBALL) return HIT_WHITE_HALF;
+      else if (spriteHitBall.kind == WHITE_HITBALL) return HIT_BLACK_HALF;
     }
+
+    if (hitBlackHalf) return HIT_BLACK_HALF;
+    else if (hitWhiteHalf) return HIT_WHITE_HALF;
   }
 
+
+  // check whether 2 sprites' bounds get intersects.
+  function checkOverlap(spriteA, spriteB){
+    var boundsA = spriteA.getBounds();
+    var boundsB = spriteB.getBounds();
+
+    return Phaser.Rectangle.intersects(boundsA, boundsB);
+  }
