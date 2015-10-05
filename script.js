@@ -15,7 +15,7 @@
 
 //Creates a new Phaser Game
 //You might want to check here to understand the basics of Phaser: http://www.photonstorm.com/phaser/tutorial-making-your-first-phaser-game
-                        
+
 var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render});
 
   //constant section
@@ -33,7 +33,9 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   //string and status section
   var sGameStatus;
   var sGamePlayingStatus;
-
+  var counterOpAnimationOnComplete = 0;
+  var counterEdAnimationOnComplete = 0;
+  var mouseClickCounter = 0;
 
   //sprite section
   var spriteBackground;
@@ -43,6 +45,12 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var groupNarrativeBitTextsBlack;
   var upperScoreBitTexts;
   var lowerScoreBitTexts;
+
+  var titleBitText;
+  var instrutionBitText;
+  var instrutionBitText2;
+  var endTitleBitText1;
+  var endTitleBitText2;
 
 
   //collision group
@@ -56,10 +64,11 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var fMouseAngle = 0;
 
   //debug variables section
-  var debugResult = 'click a body'; 
+  var debugResult = 'click a body';
 
   //score and story control section
-  var Score = [0, 0]; 
+  var endCondition = 0;
+  var Score = [0, 0];
   var ballSprite = ['hitBallw', 'hitBallb'];
   var narrativeChangeThreshold = 5;
   var spriteNarrativeBitTextsWhitePositionX = game.width / 2;
@@ -72,7 +81,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var bitmapR,bitmapG,bitmapB;
 
   function preload () {
-    game.load.image('bg', 'assets/image/background3.png');   
+    game.load.image('bg', 'assets/image/background3.png');
     game.load.image('playerw', 'assets/image/whitehalf.png');
     game.load.image('playerb', 'assets/image/blackhalf2.png');
     game.load.image('hitBallw','assets/image/white_ball.png');
@@ -88,7 +97,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   }
 
   function create () {
-    // game.physics.startSystem(Phaser.Physics.ARCADE); 
+    // game.physics.startSystem(Phaser.Physics.ARCADE);
     //game.physics.startSystem(Phaser.Physics.P2JS);
     game.world.setBounds(0, 0, 800, 800);
     //game.physics.p2.setImpactEvents(true);
@@ -124,8 +133,33 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     upperScoreBitTexts.visible = false;
     lowerScoreBitTexts.visible = false;
 
+    titleBitText = game.add.bitmapText(game.world.width/2, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Dialectic', 50);
+    titleBitText.anchor.x = 0.5;
+    titleBitText.tint = 0xFFFFFF;
+    titleBitText.visible = false;
+
+    instrutionBitText = game.add.bitmapText(game.world.width / 2, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'click mouse to start',32);
+    instrutionBitText.anchor.x = 0.5;
+    instrutionBitText.tint = 0x000000;
+    instrutionBitText.visible = false;
+
+    instrutionBitText2 = game.add.bitmapText(game.world.width / 2, spriteNarrativeBitTextsBlackPositionY + 32, 'pixelFont', 'move mouse to change the angle',32);
+    instrutionBitText2.anchor.x = 0.5;
+    instrutionBitText2.tint = 0x000000;
+    instrutionBitText2.visible = false;
+
+    endTitleBitText1 = game.add.bitmapText(game.world.width / 2, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'THE', 32);
+    endTitleBitText1.anchor.x = 0.5;
+    endTitleBitText1.tint = 0xFFFFFF;
+    endTitleBitText1.visible = false;
+
+    endTitleBitText2 = game.add.bitmapText(game.world.width / 2, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'END', 32);
+    endTitleBitText2.anchor.x = 0.5;
+    endTitleBitText2.tint = 0x000000;
+    endTitleBitText2.visible = false;
+
     createNarrativeBitTexts();
-    sGameStatus = 'GAME_MENU'; 
+    sGameStatus = 'GAME_MENU';
     initialState();
 
   }
@@ -133,13 +167,16 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   function update(){
     if (sGameStatus == 'GAME_MENU') {
       //Start menual
-      updateGameMenu();  
+      updateGameMenu();
     } else if (sGameStatus == 'GAME_PLAYING'){
       //main game. much detailed status machine needed.
       updateGamePlaying();
     } else if (sGameStatus == 'GAME_OVER') {
       //game over menu staff
       updateGameOver();
+    } else if (sGameStatus == 'GAME_OVER_ANIMATION'){
+      // game over animation
+      updateGameOverAnimation();
     } else {
       //else thing;
     }
@@ -161,10 +198,55 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     //game.debug.body(spritePlayerBallw);
   }
 
-  function initialState(){
+  function destruction() {
     if (sGameStatus == 'GAME_MENU') {
 
     } else if (sGameStatus == 'GAME_PLAYING') {
+      groupHitBalls.removeAll(true);
+
+    } else if (sGameStatus == 'GAME_OVER') {
+
+    } else if (sGameStatus == 'GAME_OVER_ANIMATION') {
+      groupHitBalls.removeAll(true);
+    }
+  }
+
+  function initialState(){
+    if (sGameStatus == 'GAME_MENU') {
+      titleBitText.visible = true;
+      instrutionBitText.visible = true;
+      instrutionBitText2.visible = true;
+      endTitleBitText1.visible = false;
+      endTitleBitText2.visible = false;
+
+      groupNarrativeBitTextsWhite.visible = false;
+      groupNarrativeBitTextsBlack.visible = false;
+
+      spriteBackground.visible = true;
+      spritePlayerBallw.visible = true;
+      spritePlayerBallb.visible = true;
+      upperScoreBitTexts.visible = false;
+      lowerScoreBitTexts.visible = false;
+      spriteBackground.angle = 0;
+      spritePlayerBallw.angle = 0;
+      spritePlayerBallb.angle = 0;
+      counterOpAnimationOnComplete = 0;
+      mouseClickCounter = 0;
+
+    } else if (sGameStatus == 'GAME_PLAYING') {
+
+      endCondition = 0;
+
+      endTitleBitText1.visible = false;
+      endTitleBitText2.visible = false;
+
+      titleBitText.visible = false;
+      instrutionBitText.visible = false;
+      instrutionBitText2.visible = false;
+
+      groupNarrativeBitTextsWhite.visible = true;
+      groupNarrativeBitTextsBlack.visible = true;
+
       spriteBackground.visible = true;
       spritePlayerBallb.visible = true;
       spritePlayerBallw.visible = true;
@@ -180,18 +262,78 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       spritePlayerBallw.tint = 0xFFFFFF;
       //timerEventMakeBall.lastTime = 0;
 
-      game.time.events.repeat(Phaser.Timer.SECOND * 1, 100, timerEventMakeBall, this);
+      //game.time.events.repeat(Phaser.Timer.SECOND * 1, 100, timerEventMakeBall, this);
+      timerMakeBall = game.time.create(false);
+      timerMakeBall.loop(1000, timerEventMakeBall, this);
+      timerMakeBall.start();
+
     } else if (sGameStatus == 'GAME_OVER') {
+      endTitleBitText1.visible = true;
+      endTitleBitText2.visible = true;
+      titleBitText.visible = false;
+      instrutionBitText2.visible = false;
+      instrutionBitText.visible = false;
+      groupNarrativeBitTextsWhite.visible = false;
+      groupNarrativeBitTextsBlack.visible = false;
+      lowerScoreBitTexts.visible = false;
+      upperScoreBitTexts.visible = false;
 
+      // ========================================
+      // Ending Material
+      // ========================================
+      switch(endCondition) {
+        case 1:
+
+          break;
+        case 2:
+          endTitleBitText1.tint = 0xe74c3c;
+          break;
+        default:
+
+          break;
+      }
+
+    } else if (sGameStatus == 'GAME_OVER_ANIMATION'){
+      for (var i = 0; i < groupHitBalls.children.length; i++) {
+        groupHitBalls.children[i].body.velocity.x = 0;
+        groupHitBalls.children[i].body.velocity.y = 0;
+        var tween1 = game.add.tween(groupHitBalls.children[i]).to({alpha:0}, 1500, Phaser.Easing.Quadratic.InOut, true);
+        tween1.onComplete.add(tweenEdAnimationOnComplete, this);
+      }
+      groupNarrativeBitTextsWhite.visible = false;
+      groupNarrativeBitTextsBlack.visible = false;
+
+      counterEdAnimationOnComplete = 0;
     } else {
-
+      groupNarrativeBitTextsWhite.visible = false;
+      groupNarrativeBitTextsBlack.visible = false;
     }
   }
 
   //update function for status "GAME_MENU"
   function updateGameMenu(){
-    sGameStatus = 'GAME_PLAYING';
-    initialState();
+    if (mouseClickCounter == 0) {
+        if (game.input.mousePointer.isDown) {
+            mouseClickCounter = 1;
+            updateGameMenu_OpAnimation_Initialization();
+        }
+    }
+    if (counterOpAnimationOnComplete >= 3) {
+      sGameStatus = 'GAME_PLAYING';
+      initialState();
+    }
+    else {
+      console.log("counterOpAnimationOnComplete is " + counterOpAnimationOnComplete);
+    }
+  }
+
+  function updateGameMenu_OpAnimation_Initialization(){
+    var tween1 = game.add.tween(spriteBackground).to({angle:180}, 1500, Phaser.Easing.Quadratic.InOut, true);
+    tween1.onComplete.add(tweenOpAnimationOnComplete, this);
+    var tween2 = game.add.tween(spritePlayerBallw).to({angle:180}, 1500, Phaser.Easing.Quadratic.InOut, true);
+    tween2.onComplete.add(tweenOpAnimationOnComplete, this);
+    var tween3 = game.add.tween(spritePlayerBallb).to({angle:180}, 1500, Phaser.Easing.Quadratic.InOut, true);
+    tween3.onComplete.add(tweenOpAnimationOnComplete, this);
   }
 
   //update function for status "GAME_PLAYING"
@@ -207,7 +349,28 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     }
 
     updateGroupHitBalls();
+    decideEndCondition();
+
+
+    // ==============================================================
+    // Ending termination
+    // ==============================================================
+
+    if (endCondition > 0) {
+      //destruction();
+      sGameStatus = 'GAME_OVER_ANIMATION';
+      initialState();
+    }
     //timerEventMakeBall();
+  }
+
+  function updateGameOverAnimation(){
+    if (counterEdAnimationOnComplete > groupHitBalls.children.length) {
+      destruction();
+      sGameStatus = 'GAME_OVER';
+      initialState();
+    }
+
   }
 
   function updateGroupHitBalls(){
@@ -223,7 +386,15 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   }
 
   function updateGameOver(){
-
+    getIsMouseInCircle();
+    if (!isMouseInCircle) {
+      getMouseAngle();
+      //console.log("MouseAngle is " + fMouseAngle);
+      //console.log("MousePosition is " + game.input.mousePointer.x + " " + game.input.mousePointer.y);
+      spriteBackground.angle = fMouseAngle;
+      spritePlayerBallb.angle = fMouseAngle;
+      spritePlayerBallw.angle = fMouseAngle;
+    }
   }
 
   function buttonStart(){
@@ -266,10 +437,10 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     return fMouseAngle;
   }
 
-  // TODO: 
+  // TODO:
   // emerge positions
   // hitball color
-  // set speed 
+  // set speed
   // when white balls come from bottom, nothing can be seen
   function makeHitBall(angle, kind){
     var posx = game.width /2 * (-1) * Math.cos(angle) + game.width / 2;
@@ -327,7 +498,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     return Phaser.Rectangle.intersects(boundsA, boundsB);
   }
 
-  
+
   function updateNarrativeBitTexts(){
     var current1 = Math.min(Score[0], groupNarrativeBitTextsWhite.children.length - 1);
     groupNarrativeBitTextsWhite.children[current1].visible = true;
@@ -335,7 +506,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
     var current2 = Math.min(Score[1], groupNarrativeBitTextsBlack.children.length - 1);
     groupNarrativeBitTextsBlack.children[current2].visible = true;
-    if (current2 > 0) groupNarrativeBitTextsBlack.children[current2 - 1].visible = false;    
+    if (current2 > 0) groupNarrativeBitTextsBlack.children[current2 - 1].visible = false;
   }
 
   function updateScore(spriteHitBall, status){
@@ -349,7 +520,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       } else {
         game.stage.backgroundColor = '#000000';
       }
-      
+
       console.log("kind " + status + " earn 1 point now");
       updateNarrativeBitTexts();
 
@@ -368,23 +539,37 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
     // create the tween on this object and tween its step property to 100
     var colorTween = game.add.tween(colorBlend).to({step: 100}, time);
-    
+
     // run the interpolateColor function every time the tween updates, feeding it the
     // updated value of our tween each time, and set the result as our tint
     colorTween.onUpdateCallback(function() {
-      obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend.step);   
+      obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend.step);
     });
-    
+
     // set the object to the start color straight away
-    obj.tint = startColor;    
-    
+    obj.tint = startColor;
+
     // start the tween
     colorTween.start();
+}
+
+function tweenOpAnimationOnComplete(){
+  counterOpAnimationOnComplete += 1;
+}
+
+function tweenEdAnimationOnComplete(){
+  counterEdAnimationOnComplete += 1;
 }
 
 
   function generateRandomBall(){
     return Math.floor(Math.random() + 0.5);
+  }
+
+  function decideEndCondition(){
+    if (Score[0] + Score[1] > 10) endCondition = 1; {
+      if (Score[0] > narrativeChangeThreshold) endCondition = 2;
+    }
   }
 
 
@@ -458,7 +643,6 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'This is the story score[1] == 2', 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
