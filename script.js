@@ -456,6 +456,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     var kind = generateRandomBall();
     var angle = (Math.random() * 2 - 1) * Math.PI;
     makeHitBall(angle, kind);
+    game.world.bringToTop(groupHitBalls);
   }
 
 
