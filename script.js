@@ -20,7 +20,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
   //constant section
   var fCircleRadium = 100;
-  var fHitBallRadium = 25;
+  var fHitBallRadium = 27;
 
   var WHITE_HITBALL = 0;
   var BLACK_HITBALL = 1;
@@ -188,20 +188,24 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     }
   }
 
+  function gameDebugBound(stance){
+    game.debug.spriteBounds(stance);
+  }
+
   //using for debug
   function render(){
     //game.debug.text(debugResult, 32, 32);
     bitmapDataTrace.fill(0, 0, 0,0.4);
-
     bitmapDataTrace.draw(spriteBackground, spriteBackground.x, spriteBackground.y);
     for (var i = 0; i > groupHitBalls.children.length; i++) {
       bitmapDataTrace.draw(groupHitBalls.children[i], groupHitBalls.children[i].x, groupHitBalls.children[i].y);
     }
     bitmapDataTrace.draw(spritePlayerBallb, spritePlayerBallb.x, spritePlayerBallb.y);
     bitmapDataTrace.draw(spritePlayerBallw, spritePlayerBallw.x, spritePlayerBallw.y);
-    //if (groupHitBalls.children.length > 0) game.debug.body(groupHitBalls.children[0]);
-    //game.debug.body(spritePlayerBallb);
-    //game.debug.body(spritePlayerBallw);
+
+    //game.debug.spriteBounds(spritePlayerBallw);
+    //game.debug.spriteBounds(spritePlayerBallb);
+    //groupHitBalls.forEach(gameDebugBound);
   }
 
   function destruction() {
@@ -418,9 +422,15 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       var status = updateHitBall(spriteHitBall);
       if (status != HIT_NOTHING) {
         //console.log("spriteHitBall [ " + i + " touched the " + status +" half");
-        groupHitBalls.remove(spriteHitBall, true);
+        spriteHitBall.isDiminishing = true;
+        spriteHitBall.body.velocity.x = 0;
+        spriteHitBall.body.velocity.y = 0;
+        //spriteHitBall.scale.setTo(1.5,1.5);
+        delayRemoveFromGroup3s(groupHitBalls, spriteHitBall);
+        //groupHitBalls.remove(spriteHitBall, true);
+        updateScore(spriteHitBall,status);
       }
-      updateScore(spriteHitBall,status);
+      
     }
   }
 
@@ -506,6 +516,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     } else if ((Score[0] > narrativeChangeThreshold) && (kind == 1)) {
       hitBall.tint = 0xe74c3c;
     }
+    hitBall.isDiminishing = false;
+    hitBall.body.setSize(50, 50);
 
     hitBall.body.velocity.x = 160 * Math.cos(angle);
     hitBall.body.velocity.y = 160 * Math.sin(angle);
@@ -518,6 +530,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   // 1: Hit the black part of player's ball;
   // 2: Hit nothing.
   function updateHitBall(spriteHitBall){
+    if (spriteHitBall.isDiminishing) return HIT_NOTHING;
     var distance = Math.sqrt(
       ((spriteHitBall.position.x - game.width/2) * (spriteHitBall.position.x - game.width/2)) +
       ((spriteHitBall.position.y - game.height/2) * (spriteHitBall.position.y - game.height/2))
@@ -528,13 +541,10 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     var hitBlackHalf = checkOverlap(spriteHitBall, spritePlayerBallb);
     var hitWhiteHalf = checkOverlap(spriteHitBall, spritePlayerBallw);
 
-    if ((hitBlackHalf) && (hitWhiteHalf)) {
-      if (hitBlackHalf.width * hitBlackHalf.height > hitWhiteHalf.width * hitWhiteHalf.height) return HIT_BLACK_HALF;
-      else return HIT_WHITE_HALF;
-    }
+    if (hitBlackHalf.width * hitBlackHalf.height > hitWhiteHalf.width * hitWhiteHalf.height) return HIT_BLACK_HALF;
+    else return HIT_WHITE_HALF;
 
-    if (hitBlackHalf) return HIT_BLACK_HALF;
-    else if (hitWhiteHalf) return HIT_WHITE_HALF;
+    
   }
 
 
@@ -542,8 +552,9 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   function checkOverlap(spriteA, spriteB){
     var boundsA = spriteA.getBounds();
     var boundsB = spriteB.getBounds();
+    var output;
 
-    return Phaser.Rectangle.intersects(boundsA, boundsB);
+    return Phaser.Rectangle.intersection(boundsA, boundsB);
   }
 
 
@@ -561,8 +572,15 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   }
 
   function updateScore(spriteHitBall, status){
+    if (status == HIT_NOTHING) return;
     if (spriteHitBall.kind == status) {
       Score[status] ++;
+
+      game.add.tween(spriteHitBall.scale).to({x : 0.8}, 1000, "Linear", true);
+      game.add.tween(spriteHitBall.scale).to({y : 0.8}, 1000, "Linear", true); 
+      game.add.tween(spriteHitBall).to({alpha : 0}, 1000, "Linear", true);
+      game.add.tween(spriteHitBall).to({x: game.width /2}, 1500, Phaser.Easing.Quadratic.InOut, true);
+      game.add.tween(spriteHitBall).to({y: game.width /2}, 1500, Phaser.Easing.Quadratic.InOut, true);
       if ((status == 0) && (Score[0] == narrativeChangeThreshold + 1)) {
         tweenTint(spriteBackground, 0xFFFFFF, 0xe74c3c, 5000);
         tweenTint(spritePlayerBallw, 0xFFFFFF, 0xe74c3c, 5000);
@@ -574,6 +592,11 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
       //console.log("kind " + status + " earn 1 point now");
       updateNarrativeBitTexts();
+
+    } else {
+      game.add.tween(spriteHitBall.scale).to({x : 1.5}, 1000, "Linear", true);
+      game.add.tween(spriteHitBall.scale).to({y : 1.5}, 1000, "Linear", true); 
+      game.add.tween(spriteHitBall).to({alpha : 0}, 1000, "Linear", true);
 
     }
     if (Score[0] > narrativeChangeThreshold){
@@ -611,6 +634,13 @@ function tweenOpAnimationOnComplete(){
 function tweenEdAnimationOnComplete(){
   counterEdAnimationOnComplete += 1;
   //console.log("counterEdAnimationOnComplete is " + counterEdAnimationOnComplete);
+}
+
+function delayRemoveFromGroup3s(group, stance){
+  game.time.events.add(3000, function(){
+      group.remove(stance, true);
+    }, 
+    this);
 }
 
 
