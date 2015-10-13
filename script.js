@@ -85,7 +85,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   function preload () {
     game.load.image('bg', 'assets/image/background3.png');
     game.load.image('playerw', 'assets/image/whitehalf.png');
-    game.load.image('playerb', 'assets/image/blackhalf2.png');
+    game.load.image('playerb', 'assets/image/blackhalf.png');
     game.load.image('hitBallw','assets/image/white_ball.png');
     game.load.image('hitBallb','assets/image/black_ball.png');
 
@@ -223,6 +223,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       for (var i = 0; i < groupNarrativeBitTextsBlack.children.length; i++) {
         groupNarrativeBitTextsBlack.children[i].visible = false;
       }
+
       timerMakeBall.stop();
       timerMakeBall.destroy();
 
@@ -240,6 +241,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       for (var i = 0; i < groupNarrativeBitTextsBlack.children.length; i++) {
         groupNarrativeBitTextsBlack.children[i].visible = false;
       }
+
       timerMakeBall.stop();
       timerMakeBall.destroy();
     }
@@ -260,6 +262,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
       groupNarrativeBitTextsWhite.visible = false;
       groupNarrativeBitTextsBlack.visible = false;
+
 
       spriteBackground.visible = true;
       spritePlayerBallw.visible = true;
@@ -317,6 +320,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       instrutionBitText.visible = false;
       groupNarrativeBitTextsWhite.visible = false;
       groupNarrativeBitTextsBlack.visible = false;
+
       lowerScoreBitTexts.visible = false;
       upperScoreBitTexts.visible = false;
 
@@ -345,10 +349,12 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       groupNarrativeBitTextsWhite.visible = false;
       groupNarrativeBitTextsBlack.visible = false;
 
+
       counterEdAnimationOnComplete = 0;
     } else {
       groupNarrativeBitTextsWhite.visible = false;
       groupNarrativeBitTextsBlack.visible = false;
+
     }
   }
 
@@ -427,6 +433,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
         spriteHitBall.body.velocity.y = 0;
         //spriteHitBall.scale.setTo(1.5,1.5);
         delayRemoveFromGroup3s(groupHitBalls, spriteHitBall);
+
         //groupHitBalls.remove(spriteHitBall, true);
         updateScore(spriteHitBall,status);
       }
@@ -467,6 +474,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     var angle = (Math.random() * 2 - 1) * Math.PI;
     makeHitBall(angle, kind);
     game.world.bringToTop(groupHitBalls);
+    game.world.bringToTop(spritePlayerBallw);
+    game.world.bringToTop(spritePlayerBallb);
   }
 
 
@@ -578,7 +587,8 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
       game.add.tween(spriteHitBall.scale).to({x : 0.8}, 1000, "Linear", true);
       game.add.tween(spriteHitBall.scale).to({y : 0.8}, 1000, "Linear", true); 
-      game.add.tween(spriteHitBall).to({alpha : 0}, 1000, "Linear", true);
+      delayInvisible(spriteHitBall, 1000);
+      //game.add.tween(spriteHitBall).to({alpha : 0}, 1000, "Linear", true);
       game.add.tween(spriteHitBall).to({x: game.width /2}, 1500, Phaser.Easing.Quadratic.InOut, true);
       game.add.tween(spriteHitBall).to({y: game.width /2}, 1500, Phaser.Easing.Quadratic.InOut, true);
       if ((status == 0) && (Score[0] == narrativeChangeThreshold + 1)) {
@@ -643,13 +653,20 @@ function delayRemoveFromGroup3s(group, stance){
     this);
 }
 
+function delayInvisible(stance, delayTime) {
+  game.time.events.add(delayTime, function(){
+    stance.visible = false;
+  },
+  this);
+}
+
 
   function generateRandomBall(){
     return Math.floor(Math.random() + 0.5);
   }
 
   function decideEndCondition(){
-    if (Score[0] + Score[1] > 200) {
+    if (Score[0] + Score[1] > 100) {
       endCondition = 1; 
       if (Score[0] > narrativeChangeThreshold) endCondition = 2;
     }
@@ -709,326 +726,683 @@ function delayRemoveFromGroup3s(group, stance){
     
 
     //6
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', '', 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //7
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', '', 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //8
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', '', 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //9
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', '', 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //10
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', '', 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //11
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //12
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //13
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //14
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //15
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //16
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //17
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //18
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //19
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //20
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Things happen around me", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //21
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //22
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //23
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //24
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //25
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //26
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //27
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //28
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //29
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //30
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Swallowing me, like the sea", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //31
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //32
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //33
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //34
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //35
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //36
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //37
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //38
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //39
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //40
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Nobody is my friend", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //41
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //42
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //43
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //44
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //45
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //46
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //47
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //48
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //49
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //50
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "I'm tired of my life", 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', "Everything is boring in my life", 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xFFFFFF;
 
     //51 ==  narrativeChangeThreshold + 1;
-    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'I fall in love.', 32);
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
     groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
     spriteNarrativeBitTextsWhite.visible = false;
     spriteNarrativeBitTextsWhite.anchor.x = 0.5;
     spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //52
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //53
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //54
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //55
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //56
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //57
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //58
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //59
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //60
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Until she goes into my life', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //61
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //62
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //63
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //64
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //65
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //66
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //67
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //68
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //69
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //70
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will be with me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //71
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //72
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //73
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //74
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //75
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //76
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //77
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //78
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //79
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //80
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she can see the future of us', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //81
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //82
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //83
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //84
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //85
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //86
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //87
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //88
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //89
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //90
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says we should marry', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //91
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //92
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //93
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //94
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //95
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //96
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //97
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //98
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'She says she will marry me', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //99
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'But she lied.', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+    //100
+    spriteNarrativeBitTextsWhite = game.add.bitmapText(spriteNarrativeBitTextsWhitePositionX, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'But she lied.', 32);
+    groupNarrativeBitTextsWhite.add(spriteNarrativeBitTextsWhite);
+    spriteNarrativeBitTextsWhite.visible = false;
+    spriteNarrativeBitTextsWhite.anchor.x = 0.5;
+    spriteNarrativeBitTextsWhite.tint = 0xe74c3c;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // ========================================================
     // Black story
@@ -1093,7 +1467,7 @@ function delayRemoveFromGroup3s(group, stance){
 
 
     //9
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can live alone', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', '', 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
@@ -1101,130 +1475,640 @@ function delayRemoveFromGroup3s(group, stance){
 
 
     //10
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can live alone', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', '', 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //11
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can live alone', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //12
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can live alone', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //13
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can live alone', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //14
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can live alone', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //15
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can live alone', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //16
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //17
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //18
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //19
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //20
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I don't know what should I do", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //21
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //22
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //23
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //24
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //25
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //26
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
     //27
-    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'and I think I can', 32);
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //28
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //29
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //30
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "and I'm afraid of future", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //31
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //32
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //33
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //34
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
     groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
     spriteNarrativeBitTextsBlack.visible = false;
     spriteNarrativeBitTextsBlack.anchor.x = 0.5;
     spriteNarrativeBitTextsBlack.tint = 0x000000;
 
 
+    //35
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //36
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //37
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //38
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //39
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //40
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'I wish I can be alone', 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //41
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //42
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //43
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //44
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //45
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //46
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //47
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //48
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //49
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //50
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "But I'm scared of being lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //51
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //52
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //53
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //54
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //55
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //56
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //57
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //58
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //59
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //60
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "How can I stop this feeling?", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //61
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //62
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //63
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //64
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //65
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //66
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //67
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+
+    //68
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //69
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //70
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I start to talk to myself", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //71
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //72
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //73
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //74
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //75
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //76
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //77
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //78
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //79
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //80
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I still feel lonely", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //81
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //82
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //83
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //84
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //85
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //86
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //87
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //88
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //89
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //90
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I can't stop this", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //91
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //92
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //93
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //94
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //95
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //96
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //97
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //98
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "Finally I come up with something", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //99
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I decide to kill myself.", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
+
+    //100
+    spriteNarrativeBitTextsBlack = game.add.bitmapText(spriteNarrativeBitTextsBlackPositionX, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', "I decide to kill myself.", 32);
+    groupNarrativeBitTextsBlack.add(spriteNarrativeBitTextsBlack);
+    spriteNarrativeBitTextsBlack.visible = false;
+    spriteNarrativeBitTextsBlack.anchor.x = 0.5;
+    spriteNarrativeBitTextsBlack.tint = 0x000000;
   }
