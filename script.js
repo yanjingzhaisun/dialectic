@@ -106,6 +106,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     //game.physics.startSystem(Phaser.Physics.P2JS);
     game.world.setBounds(0, 0, 800, 800);
     music = game.add.audio('music');
+    music.loop = true;
     console.log("music should be added");
     //game.physics.p2.setImpactEvents(true);
 
@@ -255,7 +256,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
 
   function initialState(){
     if (sGameStatus == 'GAME_MENU') {
-      music.stop();
+      music.fadeOut(2000);
       
       spriteBackground.tint = 0xFFFFFF;
       spritePlayerBallw.tint = 0xFFFFFF;
@@ -283,7 +284,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       mouseClickCounter = 0;
 
     } else if (sGameStatus == 'GAME_PLAYING') {
-      music.play();
+      music.fadeIn(1);
       console.log("music should be played.");
       endCondition = 0;
 
@@ -675,7 +676,7 @@ function delayInvisible(stance, delayTime) {
   }
 
   function decideEndCondition(){
-    if (Score[0] + Score[1] > 100) {
+    if (Score[0] + Score[1] >= 100) {
       endCondition = 1; 
       if (Score[0] > narrativeChangeThreshold) endCondition = 2;
     }
