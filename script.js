@@ -48,6 +48,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
   var lowerScoreBitTexts;
 
   var titleBitText;
+  var titleBitText2;
   var instrutionBitText;
   var instrutionBitText2;
   var endTitleBitText1;
@@ -139,10 +140,15 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
     upperScoreBitTexts.visible = false;
     lowerScoreBitTexts.visible = false;
 
-    titleBitText = game.add.bitmapText(game.world.width/2, spriteNarrativeBitTextsWhitePositionY, 'pixelFont', 'Dialectic', 50);
+    titleBitText = game.add.bitmapText(game.world.width/2, spriteNarrativeBitTextsWhitePositionY - 60, 'pixelFont', 'One', 50);
     titleBitText.anchor.x = 0.5;
     titleBitText.tint = 0xFFFFFF;
     titleBitText.visible = false;
+
+    titleBitText2 = game.add.bitmapText(game.world.width/2, spriteNarrativeBitTextsWhitePositionY , 'pixelFont', 'Hundred', 50);
+    titleBitText2.anchor.x = 0.5;
+    titleBitText2.tint = 0xFFFFFF;
+    titleBitText2.visible = false;
 
     instrutionBitText = game.add.bitmapText(game.world.width / 2, spriteNarrativeBitTextsBlackPositionY, 'pixelFont', 'click mouse to start',32);
     instrutionBitText.anchor.x = 0.5;
@@ -255,6 +261,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       spritePlayerBallw.tint = 0xFFFFFF;
 
       titleBitText.visible = true;
+      titleBitText2.visible = true;
       instrutionBitText.visible = true;
       instrutionBitText2.visible = true;
       endTitleBitText1.visible = false;
@@ -284,6 +291,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       endTitleBitText2.visible = false;
 
       titleBitText.visible = false;
+      titleBitText2.visible = false;
       instrutionBitText.visible = false;
       instrutionBitText2.visible = false;
 
@@ -316,6 +324,7 @@ var game = new Phaser.Game(800, 800, Phaser.AUTO, '', { preload: preload, create
       endTitleBitText1.visible = true;
       endTitleBitText2.visible = true;
       titleBitText.visible = false;
+      titleBitText2.visible = false;
       instrutionBitText2.visible = false;
       instrutionBitText.visible = false;
       groupNarrativeBitTextsWhite.visible = false;
